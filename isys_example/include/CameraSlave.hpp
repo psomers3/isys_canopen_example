@@ -17,7 +17,7 @@ public:
     using BasicSlave::BasicSlave;
     void initialize(){
         std::cout << "registering functions!\n";
-        _camera_thread = std::thread([this](){this->on_write_1();});
+        _camera_thread = std::thread([this](){this->worker();});
     }
 
 protected:
@@ -26,7 +26,7 @@ protected:
 private:
     int _x_accel_address;
     std::thread _camera_thread;
-    void on_write_1(){
+    void worker(){
         while(true)
         {
             using namespace std::chrono_literals;
