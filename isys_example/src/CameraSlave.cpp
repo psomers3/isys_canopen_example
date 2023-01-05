@@ -45,7 +45,7 @@ void CameraSlave::worker(){
             std::lock_guard<std::mutex> lock(_value_mutex);
             _last_value_read = false;
         }
-        Write(_write_value_idx, 0, x);
+        Write(_write_value_idx, _value_subidx, x);
         std::cout << "waiting\n"; 
 
         // wait until the master has read the value
