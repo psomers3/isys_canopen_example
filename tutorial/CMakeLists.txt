@@ -15,9 +15,9 @@ target_link_libraries(master_tutorial ${LELY_LIBRARIES})
 target_link_libraries(slave_tutorial ${LELY_LIBRARIES})
 
 # make the dcf file from the yaml definition and copy needed files to build directory
-add_custom_command( COMMAND dcfgen -r cpp_tutorial.yml
+add_custom_command( TARGET master_tutorial POST_BUILD
+                    COMMAND dcfgen -r cpp_tutorial.yml
                     WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-                    TARGET master_tutorial POST_BUILD
                     COMMAND ${CMAKE_COMMAND} -E copy_if_different
                     "${CMAKE_CURRENT_SOURCE_DIR}/master.dcf"
                     $<TARGET_FILE_DIR:master_tutorial>

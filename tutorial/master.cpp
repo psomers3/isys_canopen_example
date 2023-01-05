@@ -108,6 +108,7 @@ class MyDriver : public canopen::FiberDriver {
     if (idx == 0x4001 && subidx == 0) {
       // Obtain the value sent by PDO from object 4001:00 on the slave.
       uint32_t val = rpdo_mapped[0x4001][0];
+
       // Increment the value and store it to an object in the local object
       // dictionary that will be sent by TPDO to object 4000:00 on the slave.
       tpdo_mapped[0x4000][0] = ++val;

@@ -1,12 +1,8 @@
-#include <lely/io2/sys/io.hpp>
-#include <lely/io2/sys/sigset.hpp>
-#include <lely/io2/sys/timer.hpp>
+#pragma once
 #include <lely/coapp/slave.hpp>
-#include <iostream>
 #include <bits/stdc++.h>
 
-#include <opencv2/core.hpp>
-#include <opencv2/videoio.hpp>
+
 
 using namespace lely;
 
@@ -15,25 +11,41 @@ class CameraSlave : public canopen::BasicSlave
 {
 public:
     using BasicSlave::BasicSlave;
-    void initialize(){
-        std::cout << "registering functions!\n";
-        _camera_thread = std::thread([this](){this->worker();});
-    }
+    
+    /**
+     * Fill this function with things needed to create the camera
+     * and other fancy things you need for your math. It is
+     * probably better to call this somewhere that it is called
+     * by either a received command or on startup, but I'm too
+     * lazy to look for those things right now. I would also move
+     * the thread creation to a different function.
+     * NOTE: Make sure to initialize all private member variables
+     * to something as soon as possible (i.e. here). Normally this
+     * is done in the constructor, but I didn't feel like overwriting
+     * all the different parent constructors since I don't know 
+     * which one you'll use. Really it's only important for pointers,
+     * but hey, good practices are good practices.
+     * 
+     **/
+    void initialize();
 
 protected:
 
+    /**This function gets called every time a value is read from the local object
+     * dictionary by an SDO or RPDO.
+     **/
+    std::error_code on_read();
 
 private:
-    int _x_accel_address;
-    std::thread _camera_thread;
-    void worker(){
-        while(true)
-        {
-            using namespace std::chrono_literals;
-            uint32_t x = std::rand();
-            Write(0x4001, 0, x);
-            std::cout << x << '\n' << std::flush;
-            std::this_thread::sleep_for(100ms);
-        }
-    }
+    uint16_t _read_value_idx;  // not currently used.
+    uint16_t _write_value_idx;  // index to send values to
+    uint8_t _value_subidx;  // sub index for sending values
+    std::thread _camera_thread;  // thread to manage the task
+    bool _last_value_read;  // whether the last sent value has been read yet
+    std::mutex _value_mutex;  // mutex protecting _last_value_read
+
+    /**
+     * The thread that runs in the background. You can do whatever here.
+     **/
+    void worker();
 };
